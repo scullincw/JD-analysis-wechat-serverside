@@ -53,7 +53,7 @@ public class WechatLoginController {
 //        }
         
         // 5.根据返回的User实体类，判断用户是否是新用户，是的话，将用户信息存到数据库；不是的话，更新最新登录时间
-        User user = this.userMapper.selectById(openid);
+        User user = this.userMapper.selectById(openid);		//openid是用户数据表的主键，即可以唯一确定用户的标识
         // uuid生成唯一key，用于维护微信小程序用户与服务端的会话
         String skey = UUID.randomUUID().toString();
         if (user == null) {
