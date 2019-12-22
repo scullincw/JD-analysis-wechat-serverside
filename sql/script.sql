@@ -23,25 +23,7 @@ VALUES ("creator", 1);
 
 SELECT * FROM user;
 
-/* 公告表 */
-CREATE TABLE billboard (
-id int(8) NOT NULL auto_increment COMMENT 'id',
-create_time timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-billboard_title varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公告标题',
-billboard_content varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公告内容',
-PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '公告信息' ROW_FORMAT = Dynamic;
 
-#DROP TABLE billboard;
-
-INSERT INTO billboard(billboard_title, billboard_content)
-VALUES ("12月开会通知",
-"全体员工请在12月8日，文泰楼202开会");
-INSERT INTO billboard(billboard_title, billboard_content)
-VALUES ("停电通知",
-"12月10日10：00-18：00停电");
-
-SELECT * FROM billboard;
 
 
 /* 会议室表 */
