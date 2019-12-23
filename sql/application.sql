@@ -18,8 +18,14 @@ FOREIGN KEY (`reviewer_openid`) REFERENCES user(`open_id`)
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '申请信息' ROW_FORMAT = Dynamic;
 
 #测试添加申请
-INSERT INTO application(app_type, applicant_openid, applicant, app_content)
-VALUES (1, 'oY1mB4g3MhuTNLA1de7JuRFCKZ0E', 'scullin', '请假');
+INSERT INTO application(app_type, applicant, app_content, applicant_openid)
+VALUES (1, 'scullin', '请假', 'oY1mB4g3MhuTNLA1de7JuRFCKZ0E');
+
+INSERT INTO application(app_type, applicant, app_content, additional_content, applicant_openid)
+VALUES (3, '程为', '打车报销', '300元', 'oY1mB4g3MhuTNLA1de7JuRFCKZ0E');
+
+INSERT INTO application(app_type, applicant, app_content, additional_content, applicant_openid)
+VALUES (4, '戴', '借用会议室开会', '文泰楼 105', 'oY1mB4g3MhuTNLA1de7JuRFCKZ0E');
 
 #测试审批
 UPDATE application
