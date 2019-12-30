@@ -16,57 +16,74 @@ import java.util.Date;
 @Data
 public class User {
     private static final long serialVersionUID = 1L;
+    
     /**
      * open_id
      */
     @TableId(value = "open_id",type = IdType.INPUT)
     private String openId;
+    
     /**
      * skey
      */
     private String skey;
+    
     /**
      * 创建时间
      */
     @TableField("create_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createTime;
+    
     /**
      * 最后登录时间
      */
     @TableField("last_visit_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date lastVisitTime;
+    
     /**
      * session_key
      */
     @TableField("session_key")
     private String sessionKey;
+    
+    /**
+     * 身份
+     */
+    @TableField("identity")
+    private Integer identity;
+    
     /**
      * 市
      */
     @TableField("city")
     private String city;
+    
     /**
      * 省
      */
     @TableField("province")
     private String province;
+    
     /**
      * 国
      */
     @TableField("country")
     private String country;
+    
     /**
      * 头像
      */
     @TableField("avatar_url")
     private String avatarUrl;
+    
     /**
      * 性别
      */
     @TableField("gender")
     private Integer gender;
+    
     /**
      * 网名
      */

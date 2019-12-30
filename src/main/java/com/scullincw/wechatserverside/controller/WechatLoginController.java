@@ -71,6 +71,7 @@ public class WechatLoginController {
             user.setCreateTime(new Date());
             user.setLastVisitTime(new Date());
             user.setSessionKey(sessionKey);
+            user.setIdentity(0);
             user.setCity(city);
             user.setProvince(province);
             user.setCountry(country);
@@ -86,13 +87,15 @@ public class WechatLoginController {
             user.setSkey(skey);
             this.userMapper.updateById(user);
         }
-        //encrypteData比rawData多了appid和openid
+        //encryptedData比rawData多了appid和openid
         //JSONObject userInfo = WechatUtil.getUserInfo(encrypteData, sessionKey, iv);
         
         //6. 把新的skey返回给小程序
-        JSONObject respondData = new JSONObject(SessionKeyOpenId);
+        JSONObject respondData = new JSONObject();
+        respondData.put("openid", user.getOpenId());
         respondData.put("skey", skey);
-        GlobalResult result = new GlobalResult(200, "获取openid, session_key, unionid成功", respondData);
+        respondData.put("identity", user.getIdentity());
+        GlobalResult result = new GlobalResult(200, "获取openid, skey, identity成功", respondData);
         return result;
     }
 }
