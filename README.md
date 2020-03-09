@@ -1,14 +1,3 @@
-# 微信小程序服务端
+# 微信小程序服务端模板
 
-微信小程序 [移动办公应用](https://github.com/scullincw/wechat-miniprogramside)的服务端，由Java编写，采用了Spring Boot, lombok, shiro, mybatis等框架（具体依赖参见`pom.xml`），数据库采用MySQL 8.0（SQL代码在`/sql`文件夹中）。
-
-由于开发周期短，一些功能只有小程序端实现了（使用假数据），小程序端可以和服务端及数据库交互的功能有：
-
-1. 查看、添加、删除公告；
-2. 添加申请（请假、出差、报销、借用会议室）、查看申请
-3. 通过微信账户登录，显示微信用户的头像和昵称
-
-未完成的功能包括：
-
-1. 根据地点打卡签到，显示已签到人数
-2. 管理员审批申请
+微信小程序服务端的模板，由Java编写，采用了Spring Boot, lombok, shiro, mybatis等框架（具体依赖参见`pom.xml`），数据库采用MySQL 8.0（SQL代码在`/sql`文件夹中）。

@@ -93,9 +93,11 @@
 
         <!--简化代码的工具包-->
         <dependency>
-		    <groupId>org.projectlombok</groupId>
-		    <artifactId>lombok</artifactId>
-		</dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok</artifactId>
+	        <version>1.18.4</version>
+	        <scope>provided</scope>
+    	</dependency>
 
         
         <!--mybatis-plus的springboot支持-->

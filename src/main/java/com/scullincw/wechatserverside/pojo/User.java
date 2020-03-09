@@ -23,10 +23,6 @@ public class User {
     @TableId(value = "open_id",type = IdType.INPUT)
     private String openId;
     
-    /**
-     * skey
-     */
-    private String skey;
     
     /**
      * 创建时间
@@ -48,11 +44,6 @@ public class User {
     @TableField("session_key")
     private String sessionKey;
     
-    /**
-     * 身份
-     */
-    @TableField("identity")
-    private Integer identity;
     
     /**
      * 市

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,15 +27,15 @@ public class WechatLoginController {
      */
     @PostMapping("/weLogin")
     @ResponseBody
-    public GlobalResult user_login(@RequestParam(value = "js_code", required = true) String code,
-                                   @RequestParam(value = "rawData", required = true) String rawData,
-                                   @RequestParam(value = "signature", required = true) String signature,
-                                   @RequestParam(value = "encryptedData", required = true) String encryptedData,
-                                   @RequestParam(value = "iv", required = true) String iv
+    public GlobalResult user_login(@RequestParam(value = "code", required = true) String code
                                    ) {
-        // 用户非敏感信息：rawData, 小程序端通过wx.getUserInfo获取
-        // 签名：signature
-        JSONObject rawDataJson = JSON.parseObject(rawData);
+        /* @description: 用户非敏感信息：rawData, 小程序端通过wx.getUserInfo获取
+         * 签名：signature
+         * @author: scullincw
+         * @deprecated: 2020.3.7，用户非敏感数据已使用open-type获取，不再支持wx.getUserInfo
+         * 详见 https://developers.weixin.qq.com/community/develop/doc/0000a26e1aca6012e896a517556c01
+         */
+        //JSONObject rawDataJson = JSON.parseObject(rawData);
         
         // 1.接收小程序发送的code
         // 2.开发者服务器 登录凭证校验接口 appid + appsecret + code , 换取 openid, session_key, unionid .
@@ -54,48 +53,46 @@ public class WechatLoginController {
         
         // 5.根据返回的User实体类，判断用户是否是新用户，是的话，将用户信息存到数据库；不是的话，更新最新登录时间
         User user = this.userMapper.selectById(openid);		//openid是用户数据表的主键，即可以唯一确定用户的标识
+        
         // uuid生成唯一key，用于维护微信小程序用户与服务端的会话
-        String skey = UUID.randomUUID().toString();
+        //String skey = UUID.randomUUID().toString();
+        
         if (user == null) {
             // 用户信息入库
-            String nickName = rawDataJson.getString("nickName");
-            String avatarUrl = rawDataJson.getString("avatarUrl");
-            String gender = rawDataJson.getString("gender");
-            String city = rawDataJson.getString("city");
-            String country = rawDataJson.getString("country");
-            String province = rawDataJson.getString("province");
+//            String nickName = rawDataJson.getString("nickName");
+//            String avatarUrl = rawDataJson.getString("avatarUrl");
+//            String gender = rawDataJson.getString("gender");
+//            String city = rawDataJson.getString("city");
+//            String country = rawDataJson.getString("country");
+//            String province = rawDataJson.getString("province");
 
             user = new User();
             user.setOpenId(openid);
-            user.setSkey(skey);
+//            user.setSkey(skey);
             user.setCreateTime(new Date());
             user.setLastVisitTime(new Date());
             user.setSessionKey(sessionKey);
-            user.setIdentity(0);
-            user.setCity(city);
-            user.setProvince(province);
-            user.setCountry(country);
-            user.setAvatarUrl(avatarUrl);
-            user.setGender(Integer.parseInt(gender));
-            user.setNickName(nickName);
+//            user.setCity(city);
+//            user.setProvince(province);
+//            user.setCountry(country);
+//            user.setAvatarUrl(avatarUrl);
+//            user.setGender(Integer.parseInt(gender));
+//            user.setNickName(nickName);
 
             this.userMapper.insert(user);
         } else {
             // 已存在，更新用户登录时间
             user.setLastVisitTime(new Date());
-            // 重新设置会话skey
-            user.setSkey(skey);
+            // 重新设置sessionKey
+            user.setSessionKey(sessionKey);
             this.userMapper.updateById(user);
         }
-        //encryptedData比rawData多了appid和openid
-        //JSONObject userInfo = WechatUtil.getUserInfo(encrypteData, sessionKey, iv);
         
-        //6. 把新的skey返回给小程序
+        //6. 把新的sessionKey返回给小程序
         JSONObject respondData = new JSONObject();
         respondData.put("openid", user.getOpenId());
-        respondData.put("skey", skey);
-        respondData.put("identity", user.getIdentity());
-        GlobalResult result = new GlobalResult(200, "获取openid, skey, identity成功", respondData);
+        respondData.put("sessionKey", sessionKey);
+        GlobalResult result = new GlobalResult(200, "获取openid, sessionKey成功", respondData);
         return result;
     }
 }
