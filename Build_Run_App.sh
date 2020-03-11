@@ -1,7 +1,7 @@
 #!/bin/sh
 echo '======= Start building and runing SpringBoot Application ======='
 # 杀死已有进程
-kill -9 $(ps aux|grep wechat-serverside-0.0.1-SNAPSHOT.jar) || echo 'Nothing to kill'
+#kill -9 $(ps aux|grep wechat-serverside-0.0.1-SNAPSHOT.jar) || echo 'Nothing to kill'
 
 # 切换目录
 cd /root/JD-analysis-wechat-serverside &&
