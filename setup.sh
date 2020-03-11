@@ -1,8 +1,13 @@
 #!/bin/sh
-#echo '======= Start building and runing SpringBoot Application =======\n'
+echo '======= Start building and runing SpringBoot Application =======\n'
 # 杀死已有进程
-kill -9 $(ps aux|grep wechat-serverside-0.0.1-SNAPSHOT.jar) &
-sleep 2s
+if
+jps|grep jar
+then
+	kill -9 $(jps|grep jar)
+	sleep 2s
+fi
+
 
 # 切换目录
 #cd JD-analysis-wechat-serverside || echo 'cd fail'
