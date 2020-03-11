@@ -13,6 +13,5 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
-          whoami
-          pwd
-          cat /proc/version
+            cd /root/JD-analysis-wechat-serverside
+            source Build_Run_App.sh
