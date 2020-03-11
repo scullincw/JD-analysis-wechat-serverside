@@ -26,5 +26,5 @@ mvn install -Dmaven.test.skip=true
 #切换目录
 cd target
 nohup java -jar wechat-serverside-0.0.1-SNAPSHOT.jar &
-
+echo 'successfully deploy SpringBoot Application'
 
