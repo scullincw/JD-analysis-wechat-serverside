@@ -17,4 +17,6 @@ jobs:
             pwd
             git fetch --all || echo 'git fetch fail'
             git status
-            #git reset --hard origin/master && mvn clean && mvn install -Dmaven.test.skip=true && cd target && nohup java -jar wechat-serverside-0.0.1-SNAPSHOT.jar &
+            git reset --hard origin/master || echo 'git reset fail'
+            git status
+            #mvn clean && mvn install -Dmaven.test.skip=true && cd target && nohup java -jar wechat-serverside-0.0.1-SNAPSHOT.jar &
