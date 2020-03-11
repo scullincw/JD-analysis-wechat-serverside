@@ -8,21 +8,23 @@ jobs:
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
+      env:
+        PROJECT_DIR: JD-analysis-wechat-serverside
+        JAR_NAME: wechat-serverside-0.0.1-SNAPSHOT.jar
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
-            cd JD-analysis-wechat-serverside || echo 'cd fail'
+            cd ${{PROJECT_DIR}} || echo 'cd fail'
             pwd
+            git fetch --all || echo 'git fetch fail'
+            git reset --hard origin/master || echo 'git reset fail'
+            git status
             chmod +x setup.sh || echo 'chmod fail'
             ./setup.sh || echo 'run shell fail'
-            echo 'successfully run setup.sh'
-            #git fetch --all || echo 'git fetch fail'
-            #git status
-            #git reset --hard origin/master || echo 'git reset fail'
-            #git status
+            
             #mvn clean
             #mvn install -Dmaven.test.skip=true
             #cd target
-            #nohup java -jar wechat-serverside-0.0.1-SNAPSHOT.jar &
+            #nohup java -jar ${{JAR_NAME}} &
