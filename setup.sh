@@ -16,14 +16,8 @@ then
 	sleep 2s
 fi
 
-
 # 切换目录
-#cd JD-analysis-wechat-serverside || echo 'cd fail'
-
-# 从GitHub仓库拉取最新分支
-#git fetch --all || echo 'git fetch fail'
-#git reset --hard origin/master || echo 'git reset fail'
-#git status
+cd /root/JD-analysis-wechat-serverside || echo 'cd fail'
 
 # 清理项目
 mvn clean
