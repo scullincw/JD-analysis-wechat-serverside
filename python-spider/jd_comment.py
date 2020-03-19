@@ -12,6 +12,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+import sentiment_analysis as analysis
 
 ''' 词云形状图片
     通过Java调用该程序时图片路径需要绝对路径  2020.3.14 by scullin
@@ -69,7 +70,7 @@ def batch_spider_comment(url):
     key = url   #从参数传入的爬取URL
     key = re.sub("\D","",key)
     #通过range来设定爬取的页面数
-    for i in range(10):
+    for i in range(15):
         spider_comment(i,key)
         # 模拟用户浏览，设置一个爬虫间隔，防止ip被封
         time.sleep(random.random() * 5)
@@ -133,6 +134,10 @@ if __name__ == '__main__':
     # 生成词云
     print('正在生成词云\n')
     create_word_cloud()
+
+    #情感分析
+    print('情感分析\n')
+    analysis.main()
 
     #指示给Java的python程序退出标志
     #print('END OF Python')

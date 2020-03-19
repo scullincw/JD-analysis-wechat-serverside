@@ -1,3 +1,6 @@
+import json
+import os
+
 from snownlp import sentiment
 import pandas as pd
 import snownlp
@@ -66,10 +69,14 @@ res_list = []
 
 
 def test(filename, to_filename):
-    '''商品评论-情感分析-测试'''
+    '''商品评论-情感分析'''
+    averageSentiment = 0
+
     with open(f'{filename}.csv', 'r', encoding=ENCODING) as fr:
+        
         for line in fr.readlines():
             s = snownlp.SnowNLP(line)
+            averageSentiment += s.sentiments
             if s.sentiments > 0.6:
                 res = '喜欢'
                 res_list.append(1)
@@ -85,7 +92,23 @@ def test(filename, to_filename):
                 '商品评论': line.replace('\n', '')
             }
             sentiment_list.append(sent_dict)
-            print(sent_dict)
+            #print(sent_dict)
+
+        # 计算情感分析值的平均数
+        averageSentiment = averageSentiment / len(sentiment_list)
+        #print('Average sentiment value: ' + averageSentiment)
+        # 转为JSON对象
+        result = {'comments_num': len(sentiment_list), 'average_sentiment': averageSentiment }
+        json_result = json.dumps(result, sort_keys=True, indent=4, separators=(',', ':'))
+        print(json_result)
+
+        # 将结果写入文件
+        if os.path.exists('average_sentiment.txt'):
+            os.remove('average_sentiment.txt')
+        with open(f'average_sentiment.txt','x', encoding='utf8') as text_file:
+            text_file.write(json_result + '\n')
+
+
         df = pd.DataFrame(sentiment_list)
         df.to_csv(f'{to_filename}.csv', index=None, encoding=ENCODING,
                   index_label=None, mode='w')
@@ -107,7 +130,7 @@ def data_virtualization():
     plt.ylabel('value')
     plt.title(u'商品评论情感分析结果-条形图', FontProperties=font)
     plt.savefig('fig.png')
-    plt.show()
+    #plt.show()
 
 '''
 def word_cloud_show():
@@ -119,10 +142,18 @@ def word_cloud_show():
 
 def main():
     processed_data('processed_comment_data')
-#    train()  # 训练正负向商品评论数据集，第一次运行时需要
+
+    # 训练正负向商品评论数据集
+    #train()  
+
+    # 情感分析
+    print('\n正在评分...\n')
     test('jd_comment', 'result')
 
+    print('\n数据可视化\n')
     data_virtualization()  # 数据可视化
+
+    #print('END OF Python')
 
 
 if __name__ == '__main__':

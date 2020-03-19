@@ -4,21 +4,30 @@ import java.io.File;
 import  java.io.IOException;  
 import  java.io.InputStream;  
 import  java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
-public class MultiThreadProcess implements Runnable {
-	private static final String PYTHON_PATH = "C:\\Users\\scullin\\AppData\\Local\\Programs\\Python\\Python38\\python.exe";
-	private static final String SOURCE_PATH = System.getProperty("user.dir") + "\\python-source";
-	private static final String SOURCE_NAME = "jd_comment.py";
-	private String URL;
+import com.alibaba.fastjson.JSONObject;
+
+public class PythonRunner implements Runnable {
+	//private static final String PYTHON_PATH = "C:\\Users\\scullin\\AppData\\Local\\Programs\\Python\\Python38\\python.exe";
+	final static SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final String SOURCE_PATH = System.getProperty("user.dir") + "\\python-spider";
+	private String URL;					//ÉÌÆ·ÍøÖ·
+	private String SOURCE_NAME = null;	//ÔËÐÐµÄPythonÎÄ¼þÃû
+	private CountDownLatch latch;
 	
-	public MultiThreadProcess(String url) {
+	public PythonRunner(String url, String source_name, CountDownLatch latch) {
 		this.URL = url;
+		this.SOURCE_NAME = source_name;
+		this.latch = latch;
 		System.out.println(SOURCE_PATH);
 	}
 	
 	public void run() {
 		int exit_code = -1;		//python exit code
-		System.out.println("Runing Python Runtime...");
+		System.out.println("[" + sdf.format(new Date()) + "] Runing Python Runtime...");
 		String[] cmd = new String[] { "python ", SOURCE_NAME, URL };
 		
         ProcessBuilder builder = new  ProcessBuilder();  
@@ -30,7 +39,7 @@ public class MultiThreadProcess implements Runnable {
             final InputStream inputStream = pythonProcess.getInputStream();  
             final InputStream errorStream = pythonProcess.getErrorStream();
             
-            //ï¿½ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
+            //standard output
             new Thread() {  
                 public   void  run() {  
                     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));  
@@ -45,7 +54,7 @@ public class MultiThreadProcess implements Runnable {
                 }  
             }.start();  
             
-            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
+            //error output
             new Thread() { 
                 public void run() {
                     BufferedReader br2 = new BufferedReader(new InputStreamReader(errorStream));  
@@ -60,10 +69,14 @@ public class MultiThreadProcess implements Runnable {
                 }
             }.start();
             
+            /*
+             * TODO: waitFor() have parameter 'timeout' and 'timeunit' to set
+             */
             exit_code = pythonProcess.waitFor();
             pythonProcess.destroy();
             inputStream.close();
             errorStream.close();
+            latch.countDown();
         } catch  (Exception e) {  
             System.err.println(e);  
         }
@@ -71,6 +84,18 @@ public class MultiThreadProcess implements Runnable {
     }
 	
 	public static void main(String[] args) {
-		new MultiThreadProcess("https://item.jd.com/100009177424.html").run();
+		String url = "https://item.jd.com/100000205012.html";
+		String source_name = "jd_comment.py";
+		CountDownLatch latch = new CountDownLatch(1);
+		Thread th = new Thread(new PythonRunner(url, source_name, latch));
+		th.start();
+		try {
+			latch.await();	//Ö÷½ø³ÌµÈ´ý
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("all work done at "+sdf.format(new Date()));
+		
 	}
 }
