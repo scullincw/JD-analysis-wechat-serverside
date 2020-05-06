@@ -96,8 +96,7 @@ def test(filename, to_filename):
 
         # 计算情感分析值的平均数
         averageSentiment = averageSentiment / len(sentiment_list)
-        #print('Average sentiment value: ' + averageSentiment)
-        # 转为JSON对象
+        # 转为JSON对象，注意，写进文件时没有写JSON对象的花括号
         result = {'comments_num': len(sentiment_list), 'average_sentiment': averageSentiment }
         json_result = json.dumps(result, sort_keys=True, indent=4, separators=(',', ':'))
         print(json_result)
@@ -106,7 +105,11 @@ def test(filename, to_filename):
         if os.path.exists('average_sentiment.txt'):
             os.remove('average_sentiment.txt')
         with open(f'average_sentiment.txt','x', encoding='utf8') as text_file:
-            text_file.write(json_result + '\n')
+            text_file.write(json_result)
+            # json_item = "'commentsNum': " + str(len(sentiment_list)) + ",\n"
+            # text_file.write(json_item)
+            # json_item = "'averageSentiment': " + str(averageSentiment) + ",\n"
+            # text_file.write(json_item)
 
 
         df = pd.DataFrame(sentiment_list)
@@ -147,10 +150,10 @@ def main():
     #train()  
 
     # 情感分析
-    print('\n正在评分...\n')
+    #print('\n正在评分...\n')
     test('jd_comment', 'result')
 
-    print('\n数据可视化\n')
+    print('data visualization')
     data_virtualization()  # 数据可视化
 
     #print('END OF Python')

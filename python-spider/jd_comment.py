@@ -55,7 +55,7 @@ def spider_comment(page=0, key=0):
         with open(COMMENT_FILE_PATH, 'a+') as file:
             file.write(r_json_comment['content'] + '\n')
         # 打印评论对象中的评论内容
-        print(r_json_comment['content'])
+        # print(r_json_comment['content'])
 
 
 def batch_spider_comment(url):
@@ -70,7 +70,7 @@ def batch_spider_comment(url):
     key = url   #从参数传入的爬取URL
     key = re.sub("\D","",key)
     #通过range来设定爬取的页面数
-    for i in range(15):
+    for i in range(10):
         spider_comment(i,key)
         # 模拟用户浏览，设置一个爬虫间隔，防止ip被封
         time.sleep(random.random() * 5)
@@ -85,7 +85,7 @@ def cut_word():
         comment_txt = file.read()
         wordlist = jieba.cut(comment_txt, cut_all=True)
         wl = " ".join(wordlist)
-        print(wl)
+        #print(wl)
         return wl
 
 
@@ -119,24 +119,24 @@ def txt_change_to_csv():
             for line in f.readlines():
                 # 去掉str左右端的空格并以空格分割成list
                 line_list = line.strip('\n').split(',')
-                print(line_list)
+                # print(line_list)
                 writer_csv.writerow(line_list)
 
 if __name__ == '__main__':
     # 爬取数据
-    print('开始爬取数据\n')
+    print('Grabbing data')
     batch_spider_comment(sys.argv[1])   #sys.argv[1]是从命令行传入的爬取URL
 
     #转换数据
-    print('开始转换数据\n')
+    print('Translating data')
     txt_change_to_csv()
 
     # 生成词云
-    print('正在生成词云\n')
+    print('Generating cloud image')
     create_word_cloud()
 
     #情感分析
-    print('情感分析\n')
+    print('Sentiments analyzing')
     analysis.main()
 
     #指示给Java的python程序退出标志

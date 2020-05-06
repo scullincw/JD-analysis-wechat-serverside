@@ -23,3 +23,26 @@ CREATE TABLE `user`  (
 show tables;
 
 select * from `user`;
+
+/* 存储用户收藏的商品 */
+CREATE TABLE `stared_items` (
+	`item_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '京东商品id',
+    `create_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+    `price`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品收藏时价格',
+    `open_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'open_id',
+    
+    PRIMARY KEY (`item_id`, `open_id`),
+    FOREIGN KEY (`open_id`) REFERENCES `user`(`open_id`)
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户收藏商品' ROW_FORMAT = Dynamic;
+
+# 插入测试
+insert into `stared_items` (`item_id`, `price`, `open_id`)
+values('27596323', '64.5', 'oY1mB4sNMCAdYvEJdJu59ByTnS5U');
+
+# 查询测试
+select * from `stared_items`;
+
+# 根据用户open_id查询收藏商品
+select `item_id` from `stared_items`
+where `open_id` = 'oY1mB4sNMCAdYvEJdJu59ByTnS5U';
+

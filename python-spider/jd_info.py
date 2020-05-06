@@ -1,4 +1,5 @@
 import sys
+import os
 import requests
 import re
 import urllib
@@ -17,7 +18,13 @@ def getName(html):
     matchObj = re.match( r'(.*)(【(.*)】(.*))', title)
     if matchObj:
         title = matchObj.group(1)
-    print(title)
+    #print(title)
+
+    # 将结果写入文件
+    if os.path.exists('jd_info.txt'):
+        os.remove('jd_info.txt')
+    with open(f'jd_info.txt','x', encoding='utf8') as text_file:
+        text_file.write(title + '\n')
 
 def getPicture(html):
     #urls = re.findall('<li ><img alt=(.*?) data-url', html)

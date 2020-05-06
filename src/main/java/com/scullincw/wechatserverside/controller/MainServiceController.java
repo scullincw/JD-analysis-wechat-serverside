@@ -3,6 +3,7 @@ package com.scullincw.wechatserverside.controller;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,7 @@ import com.scullincw.wechatserverside.common.PythonRunner;
  * @Author: scullincw
  */
 public class MainServiceController {
+	final static String SOURCE_PATH = System.getProperty("user.dir") + "\\python-spider\\";
 	
 	@PostMapping("/analyze")
 	@ResponseBody
@@ -32,7 +34,7 @@ public class MainServiceController {
 									@RequestParam(value = "url", required = true)String URL
 			) {
 		/**
-		 * TODO: 验证openid和sessionKey, 验证url
+		 * TODO: 验证openid和sessionKey
 		 */
 		
 		//用正则表达式验证URL
@@ -57,11 +59,11 @@ public class MainServiceController {
 		CountDownLatch latch = new CountDownLatch(2);	//2个子线程
 		Thread th1 = new Thread(new PythonRunner(realURL, "jd_comment.py", latch));
 		th1.start();
-		Thread th2 = new Thread(new PythonRunner(realURL, "jd_picture.py", latch));
+		Thread th2 = new Thread(new PythonRunner(realURL, "jd_info.py", latch));
 		th2.start();
 		
 		try {
-			latch.await();	//主进程等待
+			latch.await(3, TimeUnit.MINUTES);	//主进程等待，不超过3分钟
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,39 +74,46 @@ public class MainServiceController {
 		//处理结果：商品名称和图片URL, average_sentiment.txt, jd_ciyun.jpg
 		JSONObject httpResData = new JSONObject();
 		
-		//处理
-		
-		//读取average_sentiment.txt
+		//读取jd_info.txt，即商品在京东的完整名称，只有一行
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("\\python-spider\\average_sentiment.txt"));
-			StringBuffer sb = new StringBuffer();
+			BufferedReader br = new BufferedReader(new FileReader(SOURCE_PATH + "jd_info.txt"));
 			String line = null;
-			while((line = br.readLine()) != null) {
-				sb.append(line.trim());
+			if((line = br.readLine()) != null) {
+				httpResData.put("itemName", line);
 			}
 			br.close();
-			JSONObject json_result = JSON.parseObject(sb.toString());
-			httpResData.put("result", json_result);
+			//System.out.println(httpResData.toString());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(httpResData);
 		
-//		//读取result.csv
-//		try {
-//			BufferedReader br = new BufferedReader(new FileReader("\\python-spider\\result.csv"));
-//			br.readLine();	//第一行信息为标题信息
-//			String line = null;
-//			while((line = br.readLine()) != null) {
-//				String item[] = line.split(",");	//CSV格式文件为逗号分隔符文件，这里根据逗号切分
-//				//TODO: 获取和处理数据项
-//			}
-//		} catch (Exception e) {  
-//            e.printStackTrace();  
-//      }
+		//读取average_sentiment.txt，即情感指数和评论数
+		JSONObject tempObj = new JSONObject();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(SOURCE_PATH + "average_sentiment.txt"));
+			String line = null;
+			StringBuffer sb = new StringBuffer();
+			while((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			br.close();
+			tempObj = JSONObject.parseObject(sb.toString());
+			//System.out.println(tempObj.toString());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		httpResData.putAll(tempObj);
+		System.out.println(httpResData.toString());
+		/**
+		 * 示例输出：
+		 * {"itemName":"【微软Surface Pro 7】微软 Surface Pro 7 亮铂金+灰钴蓝键盘 二合一平板电脑笔记本电脑 | 12.3英寸 第十代酷睿i5 8G 256G SSD","comments_num":386,"average_sentiment":0.8626159394675835}
+		 */
 		
 		
+		//TODO: 处理图片: jd_ciyun.jpg
 		
-		return null;
+		
+		return new GlobalResult(200, "查询成功", httpResData);
 	}
 }
