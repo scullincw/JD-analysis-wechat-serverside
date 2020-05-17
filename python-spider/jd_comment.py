@@ -95,7 +95,7 @@ def cut_word():
         comment_txt = file.read()
         wordlist = jieba.cut(comment_txt, cut_all=True)
         wl = " ".join(wordlist)
-        #print(wl)
+        # print(wl)
         return wl
 
 
@@ -118,14 +118,21 @@ def create_word_cloud(openid):
     plt.axis("off")
     plt.figure()
     #plt.show()
-    wc.to_file("..//src//main//resources//static//" + openid + "//jd_ciyun.jpg")
+    # 以openid创建文件夹
+    path = "..//src//main//resources//static//" + openid
+    folder = os.path.exists(path)
+    if not folder:
+        os.makedirs(path)
+    wc.to_file(path + "//jd_ciyun.jpg")
 
 
 
 if __name__ == '__main__':
+    print(sys.argv)
     # 爬取数据
     print('Grabbing data')
-    batch_spider_comment(sys.argv[1])   #sys.argv[1]是从命令行传入的爬取URL
+    #sys.argv[1]是从命令行传入的爬取URL
+    batch_spider_comment(sys.argv[1])
 
     #转换数据
     print('Translating data')
@@ -133,7 +140,8 @@ if __name__ == '__main__':
 
     # 生成词云
     print('Generating cloud image')
-    create_word_cloud(sys.argv[2])      #sys.argv[2]是从命令行传入的用户openid
+    #sys.argv[2]是从命令行传入的用户openid
+    create_word_cloud(sys.argv[2])   #oY1mB4g3MhuTNLA1de7JuRFCKZ0E
 
     #推荐购买指数分析
     print('Index analyzing')

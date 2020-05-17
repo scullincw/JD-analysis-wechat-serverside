@@ -1,7 +1,9 @@
 package com.scullincw.wechatserverside.controller;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -52,7 +54,9 @@ public class MainServiceController {
 			return new GlobalResult(502, "用户登录态错误！", null);
 		}
 		
-		//用正则表达式验证URL
+		/**
+		 * 用正则表达式验证URL
+		 */
 		String realURL = null;
 		
 		if(URL == null) {
@@ -71,7 +75,9 @@ public class MainServiceController {
 			return new GlobalResult(555, "URL不是有效的京东商品链接.", null);
 		}
 		
-		//多线程 (1)运行python爬虫和分析 (2)获取商品基本信息
+		/**
+		 * 多线程 (1)运行python爬虫和分析 (2)获取商品基本信息
+		 */
 		CountDownLatch latch = new CountDownLatch(2);	//2个子线程
 		Thread th1 = new Thread(new PythonRunner(realURL, openid, "jd_comment.py", latch));
 		th1.start();
@@ -87,10 +93,12 @@ public class MainServiceController {
 		//System.out.println("all work done at "+sdf.format(new Date()));
 		
 		
-		//处理结果：商品名称和图片URL, average_sentiment.txt, jd_ciyun.jpg
+		/**
+		 * 处理结果：商品名称和图片URL, average_sentiment.txt, jd_ciyun.jpg
+		 */
 		JSONObject httpResData = new JSONObject();
 		
-		//读取jd_info.txt，即商品在京东的完整名称，只有一行
+		//读取jd_info.txt
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(SOURCE_PATH + "jd_info.txt"));
 			String line = null;
@@ -128,8 +136,26 @@ public class MainServiceController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 		httpResData.putAll(tempObj);
+		
+		//从jd_comment.csv截取评论
+		JSONObject comments = new JSONObject();
+		try {
+			InputStreamReader isr = new InputStreamReader(new FileInputStream(SOURCE_PATH + "jd_comment.csv"), "GBK");
+			BufferedReader br = new BufferedReader(isr);
+			String line = br.readLine();
+			//截取前4条评论
+			for(int i = 0; line != null && i < 4; i++) {
+				comments.put(Integer.valueOf(i).toString(), line);
+				line = br.readLine();
+			}
+			isr.close();
+			//System.out.println(comments.toString());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		httpResData.put("comments", comments);
+		
 		System.out.println(httpResData.toString());
 		/**
 		 * 示例输出：
@@ -137,7 +163,6 @@ public class MainServiceController {
 		 */
 		
 		
-		//TODO: 处理图片: jd_ciyun.jpg
 		
 		
 		return new GlobalResult(200, "查询成功", httpResData);

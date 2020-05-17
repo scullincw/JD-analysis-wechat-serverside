@@ -87,7 +87,7 @@ public class PythonRunner implements Runnable {
 	
 	public static void main(String[] args) {
 		String url = "https://item.jd.com/100000205012.html";
-		String openId = "oY1mB4g3MhuTNLA1de7JuRFCKZ0E"
+		String openId = "oY1mB4g3MhuTNLA1de7JuRFCKZ0E";
 		String source_name = "jd_comment.py";
 		CountDownLatch latch = new CountDownLatch(1);
 		Thread th = new Thread(new PythonRunner(url, openId, source_name, latch));
