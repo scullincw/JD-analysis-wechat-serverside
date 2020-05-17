@@ -68,13 +68,23 @@ def batch_spider_comment(url):
     
     #key = input("Please enter the url:")
     key = url   #从参数传入的爬取URL
-    key = re.sub("\D","",key)
+    key = re.sub(r"\D","",key)
     #通过range来设定爬取的页面数
     for i in range(10):
         spider_comment(i,key)
         # 模拟用户浏览，设置一个爬虫间隔，防止ip被封
         time.sleep(random.random() * 5)
 
+def txt_change_to_csv():
+    with open('jd_comment.csv', 'w+', encoding=ENCODING, newline='')as c:
+        writer_csv = csv.writer(c, dialect="excel")
+        with open(COMMENT_FILE_PATH, 'r', encoding=ENCODING)as f:
+            # print(f.readlines())
+            for line in f.readlines():
+                # 去掉str左右端的空格并以空格分割成list
+                line_list = line.strip('\n').split(',')
+                # print(line_list)
+                writer_csv.writerow(line_list)
 
 def cut_word():
     """
@@ -89,7 +99,7 @@ def cut_word():
         return wl
 
 
-def create_word_cloud():
+def create_word_cloud(openid):
     """
     生成词云
     :return:
@@ -108,19 +118,9 @@ def create_word_cloud():
     plt.axis("off")
     plt.figure()
     #plt.show()
-    wc.to_file("jd_ciyun.jpg")
+    wc.to_file("..//src//main//resources//static//" + openid + "//jd_ciyun.jpg")
 
 
-def txt_change_to_csv():
-    with open('jd_comment.csv', 'w+', encoding=ENCODING, newline='')as c:
-        writer_csv = csv.writer(c, dialect="excel")
-        with open("jd_comment.txt", 'r', encoding=ENCODING)as f:
-            # print(f.readlines())
-            for line in f.readlines():
-                # 去掉str左右端的空格并以空格分割成list
-                line_list = line.strip('\n').split(',')
-                # print(line_list)
-                writer_csv.writerow(line_list)
 
 if __name__ == '__main__':
     # 爬取数据
@@ -133,10 +133,10 @@ if __name__ == '__main__':
 
     # 生成词云
     print('Generating cloud image')
-    create_word_cloud()
+    create_word_cloud(sys.argv[2])      #sys.argv[2]是从命令行传入的用户openid
 
-    #情感分析
-    print('Sentiments analyzing')
+    #推荐购买指数分析
+    print('Index analyzing')
     analysis.main()
 
     #指示给Java的python程序退出标志

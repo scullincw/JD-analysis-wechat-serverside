@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.scullincw.wechatserverside.common.GlobalResult;
 import com.scullincw.wechatserverside.common.PythonRunner;
+import com.scullincw.wechatserverside.mapper.UserMapper;
+import com.scullincw.wechatserverside.pojo.User;
 
 @RequestMapping("/wechat")
 @Controller
@@ -27,6 +30,9 @@ import com.scullincw.wechatserverside.common.PythonRunner;
 public class MainServiceController {
 	final static String SOURCE_PATH = System.getProperty("user.dir") + "\\python-spider\\";
 	
+	@Autowired
+    private UserMapper userMapper;
+	
 	@PostMapping("/analyze")
 	@ResponseBody
 	public GlobalResult analyzeItem(@RequestParam(value = "openid", required = true) String openid,
@@ -34,8 +40,17 @@ public class MainServiceController {
 									@RequestParam(value = "url", required = true)String URL
 			) {
 		/**
-		 * TODO: 验证openid和sessionKey
+		 * 验证openid和sessionKey
 		 */
+		User user = this.userMapper.selectById(openid);		//openid是用户数据表的主键，即可以唯一确定用户的标识
+		if(user == null) {
+			return new GlobalResult(501, "用户openid错误！", null);
+		}
+		if(!skey.equals(user.getSessionKey())) {
+			//System.out.println("skey: " + skey);
+			//System.out.println("user.getSessionKey: " + user.getSessionKey());
+			return new GlobalResult(502, "用户登录态错误！", null);
+		}
 		
 		//用正则表达式验证URL
 		String realURL = null;
@@ -51,15 +66,16 @@ public class MainServiceController {
 		if(isFind) {
 			//System.out.println(matcher.group("httpitem") + matcher.group("jdcomhtml"));
 			realURL = matcher.group("httpitem") + matcher.group("jdcomhtml");
+			System.out.println("\n" + realURL);
 		} else {
 			return new GlobalResult(555, "URL不是有效的京东商品链接.", null);
 		}
 		
 		//多线程 (1)运行python爬虫和分析 (2)获取商品基本信息
 		CountDownLatch latch = new CountDownLatch(2);	//2个子线程
-		Thread th1 = new Thread(new PythonRunner(realURL, "jd_comment.py", latch));
+		Thread th1 = new Thread(new PythonRunner(realURL, openid, "jd_comment.py", latch));
 		th1.start();
-		Thread th2 = new Thread(new PythonRunner(realURL, "jd_info.py", latch));
+		Thread th2 = new Thread(new PythonRunner(realURL, openid, "jd_info.py", latch));
 		th2.start();
 		
 		try {
@@ -78,9 +94,19 @@ public class MainServiceController {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(SOURCE_PATH + "jd_info.txt"));
 			String line = null;
+			//读取第一行 商品名称
 			if((line = br.readLine()) != null) {
 				httpResData.put("itemName", line);
 			}
+			//读取第二行 商家名称
+			if((line = br.readLine()) != null) {
+				httpResData.put("shopName", line);
+			}
+			//读取第三行 商品主图URL
+			if((line = br.readLine()) != null) {
+				httpResData.put("imgUrl", line);
+			}
+			//关闭流
 			br.close();
 			//System.out.println(httpResData.toString());
 		} catch(Exception e) {

@@ -15,11 +15,13 @@ public class PythonRunner implements Runnable {
 	final static SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final String SOURCE_PATH = System.getProperty("user.dir") + "\\python-spider";
 	private String URL;					//商品网址
+	private String openId;				//用户唯一标识的openid
 	private String SOURCE_NAME = null;	//运行的Python文件名
 	private CountDownLatch latch;
 	
-	public PythonRunner(String url, String source_name, CountDownLatch latch) {
+	public PythonRunner(String url, String openId, String source_name, CountDownLatch latch) {
 		this.URL = url;
+		this.openId = openId;
 		this.SOURCE_NAME = source_name;
 		this.latch = latch;
 		System.out.println(SOURCE_PATH);
@@ -28,7 +30,7 @@ public class PythonRunner implements Runnable {
 	public void run() {
 		int exit_code = -1;		//python exit code
 		System.out.println("[" + sdf.format(new Date()) + "] Runing Python Runtime...");
-		String[] cmd = new String[] { "python ", SOURCE_NAME, URL };
+		String[] cmd = new String[] { "python ", SOURCE_NAME, URL,  openId};
 		
         ProcessBuilder builder = new  ProcessBuilder();  
         builder.command(cmd);
@@ -85,9 +87,10 @@ public class PythonRunner implements Runnable {
 	
 	public static void main(String[] args) {
 		String url = "https://item.jd.com/100000205012.html";
+		String openId = "oY1mB4g3MhuTNLA1de7JuRFCKZ0E"
 		String source_name = "jd_comment.py";
 		CountDownLatch latch = new CountDownLatch(1);
-		Thread th = new Thread(new PythonRunner(url, source_name, latch));
+		Thread th = new Thread(new PythonRunner(url, openId, source_name, latch));
 		th.start();
 		try {
 			latch.await();	//主进程等待
