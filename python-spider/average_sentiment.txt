@@ -1,4 +1,4 @@
 {
-    "average_sentiment":0.8807248789263286,
-    "comments_num":179
+    "average_sentiment":0.8743299588410393,
+    "comments_num":252
 }

@@ -11,7 +11,8 @@ import java.util.concurrent.CountDownLatch;
 import com.alibaba.fastjson.JSONObject;
 
 public class PythonRunner implements Runnable {
-	//private static final String PYTHON_PATH = "C:\\Users\\scullin\\AppData\\Local\\Programs\\Python\\Python38\\python.exe";
+	private static final String PYTHON_PATH_WIN = "C:\\Users\\scullin\\AppData\\Local\\Programs\\Python\\Python38\\python.exe";
+	private static final String PYTHON_PATH_LINUX = "/root/anaconda3/bin/python";
 	final static SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final String SOURCE_PATH = System.getProperty("user.dir") + "\\python-spider";
 	private String URL;					//…Ã∆∑Õ¯÷∑
@@ -30,7 +31,16 @@ public class PythonRunner implements Runnable {
 	public void run() {
 		int exit_code = -1;		//python exit code
 		System.out.println("[" + sdf.format(new Date()) + "] Runing Python Runtime...");
-		String[] cmd = new String[] { "python ", SOURCE_NAME, URL,  openId};
+		String python_path = null;
+		if(System.getProperty("os.name").equals("Windows 10")) {
+			python_path = PYTHON_PATH_WIN;
+			//System.out.println(System.getProperty("os.name"));
+		} else if(System.getProperty("os.name").equals("Linux")) {
+			python_path = PYTHON_PATH_LINUX;
+		} else {
+			python_path = "python ";
+		}
+		String[] cmd = new String[] {python_path , SOURCE_NAME, URL,  openId};
 		
         ProcessBuilder builder = new  ProcessBuilder();  
         builder.command(cmd);

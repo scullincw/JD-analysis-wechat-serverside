@@ -92,7 +92,7 @@ def test(filename, to_filename):
                 '商品评论': line.replace('\n', '')
             }
             sentiment_list.append(sent_dict)
-            #print(sent_dict)
+            # print(sent_dict)
 
         # 计算情感分析值的平均数
         averageSentiment = averageSentiment / len(sentiment_list)
