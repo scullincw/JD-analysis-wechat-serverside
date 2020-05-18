@@ -14,11 +14,12 @@ from matplotlib.font_manager import FontProperties
 """
 
 # 词云字体
-#WC_FONT_PATH = '/Library/Fonts/Songti.ttc'  #用于Mac OS
-WC_FONT_PATH = 'C://WINDOWS/FONTS/MSYHL.TTC'    #用于Windows
+# WC_FONT_PATH = '/Library/Fonts/Songti.ttc'  #用于Mac OS
+# WC_FONT_PATH = 'C://WINDOWS/FONTS/MSYHL.TTC'    #用于Windows
+WC_FONT_PATH = '/usr/share/fonts/winfonts/MSYH.TTC' #用于Linux
 
 # 编码方式
-ENCODING = 'gbk'    #Mac OS换成'utf-8'
+ENCODING = 'utf-8'    #Mac OS换成'utf-8'
 
 def read_csv():
     '''读取商品评论数据文件'''

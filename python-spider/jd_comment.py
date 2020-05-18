@@ -10,6 +10,8 @@ import jieba
 import requests
 import numpy as np
 from PIL import Image
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import sentiment_analysis as analysis
@@ -21,11 +23,12 @@ WC_MASK_IMG = 'jdicon.jpg'
 # 评论数据保存文件
 COMMENT_FILE_PATH = 'jd_comment.txt'
 # 词云字体
-#WC_FONT_PATH = '/Library/Fonts/Songti.ttc'  #用于Mac OS
-WC_FONT_PATH = 'C://WINDOWS/FONTS/MSYHL.TTC'    #用于Windows
+# WC_FONT_PATH = '/Library/Fonts/Songti.ttc'  #用于Mac OS
+# WC_FONT_PATH = 'C://WINDOWS/FONTS/MSYHL.TTC'    #用于Windows
+WC_FONT_PATH = '/usr/share/fonts/winfonts/MSYH.TTC' #用于Linux
 
 # 编码方式
-ENCODING = 'gbk'    #Mac OS换成'utf-8'
+ENCODING = 'utf-8'    #Mac OS换成'utf-8'
 
 
 def spider_comment(page=0, key=0):
