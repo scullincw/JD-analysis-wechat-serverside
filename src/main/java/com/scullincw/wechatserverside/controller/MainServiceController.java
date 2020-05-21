@@ -62,18 +62,28 @@ public class MainServiceController {
 		if(URL == null) {
 			return new GlobalResult(555, "URL字符串不能为空.", null);
 		}
-		
-		String regex = "(?<httpitem>https:(\\/)(\\/)item(\\.))(\\D*)(?<jdcomhtml>jd(\\.)com(\\/)(\\d+)\\.html)(.*)";
+		/*
+		 * 	\S 匹配任何非空白字符，即除了换页符、换行符、回车符、制表符、垂直制表符之外的所有字符
+		 *  \d 匹配数字字符，等效于[0-9]
+		 */
+		String regex = "https:(\\/)(\\/)item(\\.)(\\S*)jd(\\.)com(\\S*)(\\/)(?<ID>(\\d+))\\.html(.*)";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(URL);
 		boolean isFind = matcher.find();
+		String id = null;
 		if(isFind) {
-			//System.out.println(matcher.group("httpitem") + matcher.group("jdcomhtml"));
-			realURL = matcher.group("httpitem") + matcher.group("jdcomhtml");
+			id = matcher.group("ID");
+			realURL = "https://item.jd.com/" + matcher.group("ID") + ".html";
 			System.out.println("\n" + realURL);
 		} else {
 			return new GlobalResult(555, "URL不是有效的京东商品链接.", null);
 		}
+		
+		/**
+		 * 存储京东商品ID
+		 */
+		JSONObject httpResData = new JSONObject();
+		httpResData.put("id", id);
 		
 		/**
 		 * 多线程 (1)运行python爬虫和分析 (2)获取商品基本信息
@@ -96,7 +106,6 @@ public class MainServiceController {
 		/**
 		 * 处理结果：商品名称和图片URL, average_sentiment.txt, jd_ciyun.jpg
 		 */
-		JSONObject httpResData = new JSONObject();
 		
 		//读取jd_info.txt
 		try {
@@ -157,11 +166,6 @@ public class MainServiceController {
 		httpResData.put("comments", comments);
 		
 		System.out.println(httpResData.toString());
-		/**
-		 * 示例输出：
-		 * {"itemName":"【微软Surface Pro 7】微软 Surface Pro 7 亮铂金+灰钴蓝键盘 二合一平板电脑笔记本电脑 | 12.3英寸 第十代酷睿i5 8G 256G SSD","comments_num":386,"average_sentiment":0.8626159394675835}
-		 */
-		
 		
 		
 		

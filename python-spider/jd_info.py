@@ -30,8 +30,16 @@ def getInfo(url):
     print(shop)
 
     # 获取图片地址
-    imgUrl = sel.xpath("//*[@id='spec-n1']//img/@data-origin")
-    imgUrl = imgUrl[0]
+    imgUrl1 = sel.xpath("//*[@id='spec-n1']//img/@src")
+    imgUrl2 = sel.xpath("//*[@id='spec-n1']//img/@data-origin")
+    print(imgUrl1)
+    print(imgUrl2)
+    if(imgUrl1 == []):
+        imgUrl = imgUrl2[0]
+    elif(imgUrl2 == []):
+        imgUrl = imgUrl1[0]
+    else:
+        imgUrl = ''
     print(imgUrl)
 
     # 将结果写入文件
