@@ -30,11 +30,15 @@
 
 Java环境：Java SE-1.8(JDK-10.0.2), JUnit4, Maven（具体依赖参见`pom.xml`）
 
+Python环境：Python 3.7或以上, pip 最新版（具体依赖参见`python-spider/requirements.txt` ）
+
 数据库环境：MySQL 8.0（SQL代码在`/sql`文件夹中）
 
 ## 运行方法
 
 ### 服务端运行方法
+
+首先，配置Python环境（Python 3.7或以上），安装好`python-spider/requirements.txt` 中的依赖。
 
 由于项目的前后端分离，后端运行有两种方式：
 
